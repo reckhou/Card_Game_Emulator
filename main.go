@@ -14,10 +14,11 @@ const (
   HEART = 3
   CARD_MIN = 8
   CARD_MAX = 39 // 3-10
-  DECK_SIZE = CARD_MAX - CARD_MIN + 1
+  SAME_CARD_COUNT = 2
+  DECK_SIZE = (CARD_MAX - CARD_MIN + 1)*SAME_CARD_COUNT
   HAND_SIZE = 15
-  MAX_DRAW_AMOUNT = 2
-  TOTAL_BATTLES = 10000
+  MAX_DRAW_AMOUNT = 5
+  TOTAL_BATTLES = 100000
 )
 
 var gDeck []int
@@ -34,6 +35,7 @@ func main() {
   totalRounds := 0
   maxRound := 0
   minRound := 100
+  round_stat := make([]int, 20)
   /*for {
     fmt.Printf("====== 第%d轮 ======\n", round)
     initDeck()
@@ -52,7 +54,7 @@ func main() {
     initHand()
     gDamage = 0
     round = 1
-    for len(gDeck) !=0 && gDamage < 1500 {
+    for len(gDeck) !=0 && gDamage < 1600 {
       fmt.Printf("====== 第%d场第%d轮 ======\n", battle, round)
       drawFromDeck(gHand, MAX_DRAW_AMOUNT)
       attack()
@@ -76,15 +78,17 @@ func main() {
 
     battle++
     totalRounds += round
+    round_stat[round]++
   }
 
   fmt.Printf("====== 每场战斗平均伤害:%d MAX:%d MIN:%d ======\n====== 每场战斗平均经过回合:%d MAX:%d MIN:%d ======\n", totalDamage/TOTAL_BATTLES, maxDamage, minDamage, totalRounds/TOTAL_BATTLES, maxRound, minRound)
+  fmt.Println(round_stat)
 }
 
 func initDeck() () {
   gDeck = make([]int, DECK_SIZE)
   for i := 0; i != DECK_SIZE; i++ {
-    gDeck[i] = CARD_MIN+i
+    gDeck[i] = CARD_MIN+i/SAME_CARD_COUNT
   }
   shuffleDeck_Fisher_Yates(gDeck)
 }
@@ -252,6 +256,7 @@ func attack() {
   for j, val := range gHand {
     if val == attack_card[0] {
       gHand = append(gHand[:j], gHand[j+len(attack_card):]...)
+      break
     }
   }
 }
